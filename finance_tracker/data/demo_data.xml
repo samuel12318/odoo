@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- Demo data for finance tracker module -->
+    <record id="demo_account_1" model="finance.tracker">
+        <field name="name">Demo Account 1</field>
+        <field name="account_number">111111111</field>
+        <field name="balance">1000.00</field>
+    </record>
+
+    <record id="demo_account_2" model="finance.tracker">
+        <field name="name">Demo Account 2</field>
+        <field name="account_number">22222222222</field>
+        <field name="balance">2000.00</field>
+    </record>
+
+    <!-- <record id="demo_transaction_1" model="finance.transaction">
+        <field name="account_id" ref="demo_account_1"/>
+        <field name="amount">150.00</field>
+        <field name="description">Demo Transaction 1</field>
+        <field name="date">2023-10-01</field>
+    </record>
+
+    <record id="demo_transaction_2" model="finance.transaction">
+        <field name="account_id" ref="demo_account_2"/>
+        <field name="amount">250.00</field>
+        <field name="description">Demo Transaction 2</field>
+        <field name="date">2023-10-02</field>
+    </record> -->
+</odoo>

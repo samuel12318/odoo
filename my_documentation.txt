@@ -1,0 +1,107 @@
+--dev=xml,qweb -c /home/sbonney/projects/quantum/odoo/config/odoo17.cfg -u visitation_management
+
+--dev=xml,qweb -c /home/sbonney/projects/quantum/odoo/config/odoo17.cfg -u
+
+database subscription:
+database>>table>>ir_config_parameter >> set database.expiration.date= <<new date>>
+
+
+
+record rules:(used to produce filters and access to some records based on some specific domains)
+
+<record id="finance_tracker_1" model="ir.rule">
+    <field name="name">A description of the rule's role</field>
+    <field name="model_id" ref="model_finance_tracker"/>
+
+    -----#rules begin from here
+
+    <field name="perm_read" eval="False"/>      #user can't read
+    <field name="groups" eval="[Command.link(ref('base.group_user'))]"/>
+    <field name="domain_force">[
+        '|', ('user_id', '=', user.id),
+             ('user_id', '=', False)
+    ]</field>
+
+    -----#rules end here
+</record>
+
+in odoo models:>> store=True, when you want a computed record to be stored in the database to prevent recomputation when the record is needed again
+..............:>> super(): refers to a parent class, and it's used when you want to use the parent class method in the child class
+..............:>> CRUD:
+            for a model: product.product
+
+            class Product(models.Model):
+                name=...
+                list_price=...
+                type=...
+
+            # Create
+            vals = {'name': 'Example Product', 'list_price': 200}
+            product = env['product.product'].create(vals)
+
+            found_product = env['product.product'].search([('name', '=', 'Example Product')])
+            
+            # Read
+            print(found_product.name)
+
+            # Update
+            found_product.list_price = 250
+            found_product.write({'description': 'Updated description'})
+
+            # Delete
+            found_product.unlink()
+
+    
+buttons can not only be used to trigger actions but model-actions as well(_compute):
+eg:
+
+        <button name="_compute_total" string="Compute Total" type="object"/>
+
+        from odoo import models, api
+
+        class SaleOrder(models.Model):
+            _inherit = 'sale.order'
+
+            @api.multi
+            def _compute_total(self):
+                for record in self:
+                    # Your logic to compute the total
+                    record.amount_total = ...  # Update the amount_total field
+
+        <notebook>
+            <page string="Main Product Info">
+                <field name="name"/>
+                <field name="default_code"/>
+            </page>
+            <page string="Category Details">
+                <field name="categ_id"/>  <field name="categ_id.name"/> <field name="categ_id.description"/> </page>
+        </notebook>
+
+
+Inheritance(View Inheritance)
+
+        <record id="view_product_template_form_inherited" model="ir.ui.view">
+            <field name="name">Product Template Form Inherited</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_only_form_view"/>  #inherited view
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='name']" position="after">  <field name="new_attribute"/>
+                </xpath>
+                <xpath expr="//group[@name='group_standard_price']" position="inside">  <field name="internal_notes"/>
+                </xpath>
+            </field>
+        </record>
+
+
+        Example (Adding a field after another field):
+
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="new_attribute"/>
+            </xpath>
+
+
+        Example (Adding a field inside a group):
+
+            <xpath expr="//group[@name='group_standard_price']" position="inside">
+                <field name="internal_notes"/>
+            </xpath>

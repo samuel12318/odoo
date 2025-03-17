@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_finance_transaction_user,finance.transaction.user,model_finance_transaction,base.group_user,1,1,1,1
+access_finance_category_user,finance.category.user,model_finance_category,base.group_user,1,1,1,1
+access_finance_tracker_user,finance.tracker.user,model_finance_tracker,base.group_user,1,1,1,1
+access_finance_goals_user,finance.goals.user,model_finance_goals,base.group_user,1,1,1,1

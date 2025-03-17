@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="ir_cron_visitation_autosignout" model="ir.cron">
+        <field name="name">Visitation: Auto SignOut</field>
+        <field name="model_id" ref="model_visitation_visitation" />
+        <field name="state">code</field>
+        <field name="code">model.auto_sign_out()</field>
+        <field name="user_id" ref="base.user_root"/>
+        <field name="interval_number">5</field>
+        <field name="interval_type">minutes</field>
+        <field name="numbercall">-1</field>
+        <field name="doall" eval="False" />
+    </record>
+    <record id="ir_cron_visitor_autosignout" model="ir.cron">
+        <field name="name">Visitation: Individuals of a group to SignOut</field>
+        <field name="model_id" ref="model_visitation_visitors" />
+        <field name="state">code</field>
+        <field name="code">model.group_auto_sign_out()</field>
+        <field name="user_id" ref="base.user_root"/>
+        <field name="interval_number">5</field>
+        <field name="interval_type">minutes</field>
+        <field name="numbercall">-1</field>
+        <field name="doall" eval="False" />
+    </record>
+</odoo>

@@ -1,0 +1,176 @@
+
+ <odoo>
+    <record id="action_estate_property_form" model="ir.actions.act_window">
+        <field name="name">Show Estate Property</field>
+        <field name="res_model">estate.property</field>
+        <field name="view_mode">tree,form,search</field>
+    </record>
+
+    <record id="view_estate_property_form" model="ir.ui.view">
+        <field name="name">estate.property.form</field>
+        <field name="model">estate.property</field>
+        <field name="arch" type="xml">
+            <form string="Estate Properties">
+                <header>
+                    <field name="status" widget="statusbar" statusbar_visible="pending,accepted,sold"/>
+                </header>
+                <sheet>
+                    <group>
+                        <field name="name" string="Name"/>
+                        <field name="price"/>
+                        <field name="location"/>
+                        <field name="description"/>
+                        <field name="bedrooms"/>
+                        <field name="estate_user_id" string="Estate User"/>
+                        <field name="status"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_estate_property_search" model="ir.ui.view">
+        <field name="name">estate.property.search</field>
+        <field name="model">estate.property</field>
+        <field name="arch" type="xml">
+            <search string="Estate Properties">
+                <field name="estate_user_id"/>
+                <field name="name"/>
+                <field name="price"/>
+                <field name="location"/>
+                <field name="description"/>
+                <field name="bedrooms"/>
+                <field name="status"/>
+
+                <filter string="Debees" name="price_high" domain="[('price','&gt;=',50)]"/>
+                <filter string="Ohwiemfuoba" name="price_low" domain="[('price','&lt;',50)]"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="view_estate_property_tree" model="ir.ui.view">
+        <field name="name">estate.property.tree</field>
+        <field name="model">estate.property</field>
+        <field name="arch" type="xml">
+            <tree string="Estate Properties" editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="estate_user_id"/>
+                <field name="name"/>
+                <field name="price" readonly="1"/>
+                <field name="location"/>
+                <field name="description"/>
+                <field name="bedrooms"/>
+                <field name="status" decoration-danger="status=='sold'" decoration-info="status=='pending'" decoration-success="status=='accepted'"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="estate_client_form" model="ir.actions.act_window">
+        <field name="name">Estate Client Form</field>
+        <field name="res_model">estate.user</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{'search_default_is_active_true': 1}</field>
+
+    </record>
+
+    <record id="view_estate_client_form" model="ir.ui.view">
+        <field name="name">estate.user.form</field>
+        <field name="model">estate.user</field>
+        <field name="arch" type="xml">
+            <form string="Estate Clients">
+            <header>
+                <button name="action_reset_net_worth" type="object" string="Deactivate"/>
+                <button type="action" name="%(estate_client_form)d" string="List all Clients"/>
+            </header>
+                <sheet>
+                    <group>
+                    <field name="title"/>
+                    </group>
+
+                    <group>
+                        <group name="group-left">
+                            <field name="first_name" string="Firstname"/>
+                        </group>
+                        <group name="group-right">
+                            <field name="last_name" string="Lastname"/>
+                            <field name="is_active" string="Active"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group>
+                            <group name="group-left">
+                                <field name="gender" string="Gender"/>
+                            </group>
+                            <group name="group-left">
+                                <field name="net_worth" string="Net Worth" invisible="not is_active"/>
+                            </group>
+                            <group name="group-left">
+                                <field name="net_worth_plus_25" invisible="not is_active"/>
+                            </group>       
+                            <sheet style="width:100%"> 
+                                <field name="estate_property_id" widget="one2many_list">
+                                    <tree editable="bottom">                    
+                                        <field name="name"/>
+                                        <field name="price" attrs="{'invisible': [('status', '=', 'sold')]}"/>
+                                        <field name="location"/>
+                                        <field name="description"/>
+                                        <field name="bedrooms"/>
+                                        <field name="status" decoration-danger="status=='sold'" decoration-info="status=='pending'" decoration-success="status=='accepted'"/>
+                                    </tree>
+                                </field>
+                            </sheet>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_estate_client_tree" model="ir.ui.view">
+        <field name="name">estate.user.tree</field>
+        <field name="model">estate.user</field>
+        <field name="arch" type="xml">
+            <tree string="Estate Clients">
+
+                <field name="estate_property_id" string="Property Owned"/>
+                <field name="title" string="Title"/>
+                <field name="first_name" string="Firstname" />
+                <field name="last_name" string="Lastname"/>
+                <field name="gender" string="Gender"/>
+                <field name="net_worth" string="Net Worth" invisible="not is_active"/>
+                <field name="net_worth_plus_25" invisible="not is_active"/>
+                <field name="is_active" string="Active"/>
+
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_estate_client_search" model="ir.ui.view">
+        <field name="name">estate.user.search</field>
+        <field name="model">estate.user</field>
+        <field name="arch" type="xml">
+            <search string="Estate Clients">
+
+                <field name="estate_property_id" string="Property Owned"/>
+                <field name="title" string="Title"/>
+                <field name="first_name" string="Firstname"/>
+                <field name="last_name" string="Lastname"/>
+                <field name="gender" string="Gender"/>
+                <field name="net_worth" string="Net Worth"/>
+                <field name="net_worth_plus_25"/>
+                <field name="is_active" string="Active"/>
+
+
+                <filter string="Available" name="is_active_true" domain="[('is_active','=',True)]"/>
+            </search>
+        </field>
+    </record>
+
+    <menuitem id="menu_main" name="Bonney's HomePage" sequence="-1">
+
+        <menuitem id="menu_estate_client" name="Estate Client" action="estate_client_form" sequence="1"/>
+        <menuitem id="menu_estate_property_list" name="Estate Property" action="action_estate_property_form" sequence="3"/>
+
+    </menuitem>
+</odoo> 
+

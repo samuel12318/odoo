@@ -1,0 +1,273 @@
+<odoo>
+    <record id="view_finance_goals_kanban" model="ir.ui.view">
+        <field name="name">finance.goals.kanban</field>
+        <field name="model">finance.goals</field>
+        <field name="arch" type="xml">
+            <kanban>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_global_click" style="border-radius:10px; border: 1px double black; 
+                                    box-shadow: 2px 2px 10px #ccc;">
+                            <h6 style="font-family:Arial"><field name="name"/></h6>
+                            <p style="font-family:Arial; font-size:12px"><b><field name="progress" widget="progressbar" options="{'accuracy': 2}"/></b></p>
+                            <p style="font-family:Arial; font-size:12px"><b>GHC: </b><field name="target"/></p>       
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="view_finance_goals_form" model="ir.ui.view">
+        <field name="name">finance.goals.form</field>
+        <field name="model">finance.goals</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <span style="font-size:30px;"><b>Goal: </b> <field name="name"/></span>
+                        <group>
+                            <field name="current_amount" invisible="not id" readonly="id"/>
+                            <field name="target"/>
+                            <field name="transfer_in"/>
+                            <field name="frequency"/>
+                            <field name="status" />
+                            <field name="date" string="Start date" readonly="id"/>
+                            <field name="account_id" context="{'default_model': 'finance.tracker'}"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_finance_goals" model="ir.actions.act_window">
+        <field name="name">Financial Goals</field>
+        <field name="res_model">finance.goals</field>
+        <field name="view_mode">kanban,form</field>
+        <field name="view_id" ref="view_finance_goals_kanban"/>
+    </record>
+
+
+    <record id="view_finance_transaction_graph" model="ir.ui.view">
+        <field name="name">finance.transaction.graph</field>
+        <field name="model">finance.transaction</field>
+        <field name="arch" type="xml">
+            <graph type="bar">
+                <field name="date" type="row" interval="day"/>
+                <field name="amount" type="measure"/>
+                <field name="transaction_type" type="col"/>
+            </graph>
+        </field>
+    </record>
+
+    
+    <record id="view_account_transaction_form" model="ir.ui.view">
+        <field name="name">finance.transaction.form</field>
+        <field name="model">finance.transaction</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="send_money_button" string="Send Money"/>
+                    </group>
+                    <group name="group-right">
+                        <field name="default_button" string="Transaction"/>
+                    </group>
+                    <group name="group-left">
+                        <field name="date" readonly="id"/>
+                        <field name="amount" readonly="id"/>  
+                        <field name="transaction_type" context="{'default_transaction_type': 'expense'}" invisible="send_money_button" readonly="id"/>
+                        <field name="recipient_number" context="{'default_transaction_type': 1234}" invisible="default_button" readonly="id"/>
+                        <field name="category_id" modifiers="{'invisible': [('transaction_type', '=', 'income')]}" readonly="id"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="action_finance_transaction" model="ir.actions.act_window">
+        <field name="name">Finance Transactions</field>
+        <field name="res_model">finance.transaction</field>
+        <field name="view_mode">form,graph,calendar</field>
+        <field name="view_id" ref="view_account_transaction_form"/>
+    </record>
+
+
+
+    <record id="action_account_homepage" model="ir.actions.act_window">
+        <field name="name">Accounts</field>
+        <field name="res_model">finance.tracker</field>
+        <field name="view_mode">kanban,form</field>
+    </record>
+
+    <record id="view_finance_tracker_graph" model="ir.ui.view">
+        <field name="name">finance.tracker.graph</field>
+        <field name="model">finance.tracker</field>
+        <field name="arch" type="xml">
+            <graph type="bar">
+                <field name="transaction_id"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="account_homepage_kanban" model="ir.ui.view">
+    <field name="name">finance.transaction.homepage.kanban</field>
+    <field name="model">finance.tracker</field>
+    <field name="arch" type="xml">
+        <kanban>
+            <templates>
+                <t t-name="kanban-box">
+                    <div class="oe_kanban_global_click" style="border-radius:10px; border: 1px double black; 
+                                box-shadow: 2px 2px 10px #ccc;">
+                        <h5 style="font-family:Arial"><field name="name"/></h5>
+                        <p style="font-family:Arial; font-size:12px">GHC <field name="balance" widget="monetary" options="{'currency_field': 'currency_id'}" /></p>
+                    </div>
+                </t>
+            </templates>
+        </kanban>
+
+    </field>
+    </record>
+
+    <record id="account_homepage_form" model="ir.ui.view">
+    <field name="name">finance.transaction.homepage.form</field>
+    <field name="model">finance.tracker</field>
+    <field name="arch" type="xml">
+        <form>
+            <sheet>
+                <header>
+                    <!-- <button name="invoice_id.action_generate_invoice" string="Generate Invoice" type="object"
+                    attrs="{'invisible': [('transaction_type', '!=', 'expense')]}"/> -->
+                </header>
+                <p style="font-size:30px;"><b>Account Name: </b> <field name="name" string="Account Name"/></p>
+                <p><b>Email: </b> <field name="email"/></p>
+                <p><b>Account Number: </b> <field name="account_number"/></p>
+                <p><b>Balance: </b> GHC <field name="balance" string="Balance" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="id"/></p>
+                <field name="transaction_id"/>
+            </sheet>
+        </form>
+    </field>
+    </record>
+
+
+    <record id="view_account_transaction_homepage" model="ir.ui.view">
+        <field name="name">finance.transaction.homepage.tree</field>
+        <field name="model">finance.transaction</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name" string="Transaction"/>
+                <field name="transaction_type" invisible="1" string=" "/>
+                <field name="amount_format" string="Net" decoration-success="transaction_type=='income'" decoration-danger="transaction_type=='expense'"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_account_transactions_search" model="ir.ui.view">
+        <field name="name">finance.transaction.homepage.search</field>
+        <field name="model">finance.transaction</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="date"/>
+                <field name="transaction_type"/>
+                <field name="category_id"/>
+
+                <filter name="filter_income" string="Income" domain="[('transaction_type','=','income')]"/>
+                <filter name="filter_expense" string="Expense" domain="[('transaction_type','=','expense')]"/>
+                <filter name="filter_savings" string="Savings" domain="[('tracker_id.name','=','Savings')]"/>
+                <filter name="filter_cashwallet" string="Cash" domain="[('tracker_id.name','=','Cash Wallet')]"/>
+                <filter name="filter_today" string="Today's Transactions" domain="[('date', '&gt;=', context_today().strftime('%Y-%m-%d 00:00:00')), ('date', '&lt;=', context_today().strftime('%Y-%m-%d 23:59:59'))]"/>
+            </search>
+        </field>
+    </record>
+
+
+    <record id="view_finance_transaction_calendar" model="ir.ui.view">  
+        <field name="name">finance.transaction.calendar</field>  
+        <field name="model">finance.transaction</field>  
+        <field name="arch" type="xml">  
+            <calendar string="Transactions Calendar" date_start="date" color="transaction_type">  
+                <field name="name"/> visitor_
+                <field name="amount"/>  
+                <field name="transaction_type"/> 
+            </calendar>  
+        </field>  
+    </record>  
+
+    <record id="action_savings_form" model="ir.actions.act_window">
+        <field name="name">Transaction History</field>
+        <field name="res_model">finance.transaction</field>
+        <field name="view_mode">tree,form,graph,calendar</field>
+        <field name="target">current</field>
+    </record>
+
+    <record id="action_finance_category" model="ir.actions.act_window">
+        <field name="name">Spendings</field>
+        <field name="res_model">finance.category</field>
+        <field name="view_mode">kanban,graph,search,calendar</field>
+    </record>
+
+    <record id="view_finance_category_kanban" model="ir.ui.view">
+        <field name="name">finance.category.kanban</field>
+        <field name="model">finance.category</field>
+        <field name="arch" type="xml">
+            <kanban>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_global_click" style="border-radius:10px; border: 1px double black; 
+                                    box-shadow: 2px 2px 10px #ccc;">
+                            <h5 style="font-family:Arial"><field name="name"/></h5>
+                            <p style="font-family:Arial; font-size:12px">GHC <field name="amount"/></p>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="view_finance_category_search" model="ir.ui.view">
+        <field name="name">finance.category.search</field>
+        <field name="model">finance.category</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+
+                <filter name="filter_income" string="Income" domain="[('transaction_id.transaction_type','=','income')]"/>
+                <filter name="filter_expense" string="Expense" domain="[('transaction_id.transaction_type','=','expense')]"/>
+                
+                <filter name="filter_savings" string="Savings" domain="[('transaction_id.tracker_id.name','=','Savings')]"/>
+                <filter name="filter_cashwallet" string="Cash wallet" domain="[('transaction_id.tracker_id.name','=','Cash Wallet')]"/>
+                <filter name="filter_wife" string="Wife's wallet" domain="[('transaction_id.tracker_id.name','=','Wife\'s Wallet')]"/>
+
+
+                <filter name="filter_today" string="Today's Transactions" 
+                    domain="[('transaction_id.date', '&gt;=', context_today().strftime('%Y-%m-%d 00:00:00')), ('transaction_id.date', '&lt;=', context_today().strftime('%Y-%m-%d 23:59:59'))]"/>
+                <filter name="filter_past_week" string="Past Week" 
+                    domain="[('transaction_id.date', '&gt;=', (context_today() - relativedelta(days=7))), ('transaction_id.date', '&lt;=', context_today())]"/>
+                <filter name="filter_past_month" string="Past Month" 
+                    domain="[('transaction_id.date', '&gt;=', (context_today() - relativedelta(months=1))), ('transaction_id.date', '&lt;=', context_today())]"/>
+                <filter name="filter_past_year" string="Past Year" 
+                    domain="[('transaction_id.date', '&gt;=', (context_today() - relativedelta(years=1))), ('transaction_id.date', '&lt;=', context_today())]"/>
+            </search>
+        </field>
+    </record>
+    <record id="view_finance_category_graph" model="ir.ui.view">
+        <field name="name">finance.category.graph</field>
+        <field name="model">finance.category</field>
+        <field name="arch" type="xml">
+            <graph type="pie">
+                <field name="name" type="row"/> 
+                <field name="amount" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+
+
+    <menuitem id="transaction" name="Finance Tracker" action="action_account_homepage" sequence="-2" web_icon="finance_tracker,static/description/icon1.png">
+        <menuitem id="show_accounts" name="Accounts" action="action_account_homepage" sequence="-1"/>
+        <menuitem id="show_report" name="Reports" action="action_savings_form"/>
+        <menuitem id="show_goals" name="Goals" action="action_finance_goals"/>
+        <menuitem id="show_spendings" name="Spendings" action="action_finance_category"/>
+    </menuitem>
+</odoo>

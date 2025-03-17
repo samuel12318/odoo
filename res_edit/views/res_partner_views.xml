@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>  
+<odoo>  
+    <!-- Inherit the form view of res.partner -->  
+    <record id="view_res_partner_form" model="ir.ui.view">  
+        <field name="name">res.partner.inherit.notebook</field>  
+        <field name="model">res.partner</field>  
+        <field name="inherit_id" ref="base.view_partner_form"/>  
+        <field name="arch" type="xml">  
+            <!-- Add the region field after category_id -->  
+            <field name="category_id" position="after">  
+                <field name="region"/>  
+            </field>  
+            <page name="internal_notes" position="after"> 
+                <header> 
+                    <button id="download_data" type="object" string="Download" name="action_download_form"/>  
+                </header>
+                <page string="Culture" invisible="not region">  
+                    <group>  
+                        <field name="tribe" />  
+                    </group>  
+                    <group>  
+                        <field name="festival" />  
+                    </group>  
+                </page>  
+                <!-- The Download button being placed correctly here -->  
+            </page>  
+        </field>  
+    </record>  
+
+    <!-- Define the QWeb template outside of the view -->  
+    <template id="report_partners_template">  
+        <t t-call="web.basic_layout">  
+            <div class="page">  
+                <h2>Partner Details</h2>  
+                <t t-foreach="docs" t-as="o">  
+                    <p>Name: <t t-esc="o.name"/></p>  
+                    <p>Email: <t t-esc="o.email"/> </p>  
+                    <p>Phone: <t t-esc="o.phone"/> </p>  
+                    <!-- Add any other fields you want -->  
+                </t>  
+            </div>  
+        </t>  
+    </template>  
+
+    <!-- Define the report to use the QWeb template -->  
+    <report   
+        id="report_partners"   
+        model="res.partner"   
+        string="Partner Report"   
+        report_type="qweb-pdf"   
+        name="your_module.report_partners_template"   
+        file="your_module.report_partners_template"   
+    />  
+</odoo>

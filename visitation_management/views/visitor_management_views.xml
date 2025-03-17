@@ -1,0 +1,106 @@
+<odoo>
+    <data>
+        <record id="visitor_group_visitors_form" model="ir.ui.view">
+            <field name="name">visitor.group.visitors.form</field>
+            <field name="model">visitation.visitors</field>
+            <field name="arch" type="xml">
+                <form string="Add Group Visitor">
+                    <sheet>
+                        <group>
+                            <field name="role" placeholder="Role"/>
+                            <field name="full_name"/>
+                            <field name="contact" placeholder="+233 123 456 789"/>
+                            <field name="email" placeholder="test123@gmail.com"/>
+                        </group>
+                        <button name="action_sign_in" type="object" string="Sign In" class="btn-primary" invisible = "id"/>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+
+        <record id="visitor_visitation_tree" model="ir.ui.view">
+            <field name="name">visitor.visitation.tree</field>
+            <field name="model">visitation.visitation</field>
+            <field name="arch" type="xml">
+                <tree string="Visitation">
+                    <field name="name"/>
+                    <field name="purpose"/>
+                    <field name="time_in"/>
+                    <field name="time_out"/>
+                    <field name="status"/>
+                    <field name="auto_signed_out"/>
+                </tree>
+            </field>
+        </record>
+
+
+        <record id="visitor_visitation_form" model="ir.ui.view">
+            <field name="name">visitor.visitation.form</field>
+            <field name="model">visitation.visitation</field>
+            <field name="arch" type="xml">
+                <form string="Visitation">
+                    <sheet>
+                        <header>
+                            <field name="status" widget="statusbar"/>
+                        </header>
+                        <group>
+                            <field name="purpose" readonly="id"/>
+                            <field name="visitor_type" readonly="id"/>
+                            <field name="time_in" string="Time In" invisible="not time_in"/>
+                            <field name="time_out" string="Time Out" invisible="not time_out"/>
+                        </group>
+
+                        <notebook>
+                            <page string="Visitor" invisible = "visitor_type != 'individual'">
+                                <group>
+                                    <field name="title" string="Title" readonly="id"/>
+                                    <field name="full_name" readonly="id"/>
+                                    <field name="contact" readonly="id" placeholder="+233 123 456 789"/>
+                                    <field name="email" readonly="id" placeholder="test123@gmail.com"/>
+<!--                                    <button name="action_sign_in" type="object" string="Save" class="btn-primary" invisible = "id"/>-->
+                                </group>
+                            </page>
+
+
+                            <page string="Group Visitors" invisible = "visitor_type != 'group'">
+                                <group>
+                                    <field name="company_name" readonly="id"/>
+                                </group>
+                                <field name="group_visitors">
+                                    <tree editable="false">
+                                        <field name="role" readonly="id"/>
+                                        <field name="full_name" readonly="id"/>
+                                        <field name="email"/>
+                                        <field name="contact" readonly="id"/>
+                                        <field name="time_in" string="Time In" invisible="not time_in"/>
+                                        <field name="time_out" string="Time Out" invisible="not time_out"/>
+                                        <field name="status"/>
+                                        <button name="action_sign_out" type="object" string="Sign Out" class="btn-danger" invisible = "status != 'signed_in'"/>
+<!--                                        <button name="action_sign_in" type="object" string="Sign In" class="btn-primary" invisible = "status !='new'"/>-->
+
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+
+
+<!--                        <button name="action_sign_in" type="object" string="Sign In" class="btn-primary" invisible = "status !='new'"/>-->
+                        <button name="action_sign_out" type="object" string="Sign Out" class="btn-danger" invisible = "status != 'signed_in' "/>
+
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+
+        <record id="action_visitor_management" model="ir.actions.act_window">
+            <field name="name">Visitation</field>
+            <field name="res_model">visitation.visitation</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        
+        <menuitem id="visitor_management_menu" action="action_visitor_management" name="Visitors" sequence="-1000" web_icon="visitation_management,static/description/icon1.png"/>
+    </data>
+</odoo>
