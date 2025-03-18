@@ -76,7 +76,6 @@ class Visitation(models.Model):
 
                 for item in visitors:
                     if not item.time_out:
-                        check+=1
                         item.time_out = timeout
                         item.status = 'signed_out'
 
@@ -103,7 +102,7 @@ class Visitation(models.Model):
         for record in records:
             if record.status == 'signed_in':
                 print(
-                    "\n \n ******************************* There is a record who hasn't signed out yet ********************* \n \n")
+                    "\n ***\nThere is a record in a group visit who hasn't signed out yet\n*** \n")
                 record.status = 'signed_out'
                 record.auto_signed_out = True
                 record.time_out = fields.Datetime.now().replace(hour=17, minute=00, second=0, microsecond=0)
@@ -165,21 +164,26 @@ class Visitors(models.Model):
         for record in records:
             if record.status == 'signed_in':
                 print(
-                    "\n \n ******************************* There is a record who hasn't signed out yet ********************* \n \n")
+                    "\n ***\nThere is a record in a group visit who hasn't signed out yet\n*** \n")
+
                 record.status = 'signed_out'
                 record.auto_signed_out = True
+                record.time_out = fields.Datetime.now().replace(hour=17, minute=00, second=0, microsecond=0)
 
-        # Find the cron job
-        cron = self.env['ir.cron'].search([('cron_name', '=', 'Visitation: Individuals of a group to SignOut')], limit=1)
-        if cron:
-            # Calculate the next run time
-            next_run = fields.Datetime.now().replace(hour=13, minute=50, second=0, microsecond=0)
-            print("Next run time:", next_run)
-            print('Auto Sign Out Completed:', cron.nextcall)
-        else:
-            print("Cron job not found!")
 
-        print("Auto Sign Out Completed")
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         # Find the cron job
         # cron = self.env['ir.cron'].search([('cron_name', '=', 'Visitation: Auto SignOut')], limit=1)

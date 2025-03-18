@@ -74,6 +74,7 @@
                                         <field name="time_in" string="Time In" invisible="not time_in"/>
                                         <field name="time_out" string="Time Out" invisible="not time_out"/>
                                         <field name="status"/>
+                                        <field name="auto_signed_out" invisible="not auto_signed_out" help="If checked, this visitor was signed out automatically when the work period was over"/>
                                         <button name="action_sign_out" type="object" string="Sign Out" class="btn-danger" invisible = "status != 'signed_in'"/>
                                     </tree>
                                 </field>
