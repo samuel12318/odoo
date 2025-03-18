@@ -12,7 +12,6 @@
                             <field name="contact" placeholder="+233 123 456 789"/>
                             <field name="email" placeholder="test123@gmail.com"/>
                         </group>
-                        <button name="action_sign_in" type="object" string="Sign In" class="btn-primary" invisible = "id"/>
                     </sheet>
                 </form>
             </field>
@@ -58,7 +57,6 @@
                                     <field name="full_name" readonly="id"/>
                                     <field name="contact" readonly="id" placeholder="+233 123 456 789"/>
                                     <field name="email" readonly="id" placeholder="test123@gmail.com"/>
-<!--                                    <button name="action_sign_in" type="object" string="Save" class="btn-primary" invisible = "id"/>-->
                                 </group>
                             </page>
 
@@ -68,7 +66,7 @@
                                     <field name="company_name" readonly="id"/>
                                 </group>
                                 <field name="group_visitors">
-                                    <tree editable="false">
+                                    <tree editable="false" readonly="id">
                                         <field name="role" readonly="id"/>
                                         <field name="full_name" readonly="id"/>
                                         <field name="email"/>
@@ -77,15 +75,12 @@
                                         <field name="time_out" string="Time Out" invisible="not time_out"/>
                                         <field name="status"/>
                                         <button name="action_sign_out" type="object" string="Sign Out" class="btn-danger" invisible = "status != 'signed_in'"/>
-<!--                                        <button name="action_sign_in" type="object" string="Sign In" class="btn-primary" invisible = "status !='new'"/>-->
-
                                     </tree>
                                 </field>
                             </page>
                         </notebook>
 
 
-<!--                        <button name="action_sign_in" type="object" string="Sign In" class="btn-primary" invisible = "status !='new'"/>-->
                         <button name="action_sign_out" type="object" string="Sign Out" class="btn-danger" invisible = "status != 'signed_in' "/>
 
                     </sheet>

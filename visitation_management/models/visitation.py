@@ -63,20 +63,38 @@ class Visitation(models.Model):
         return record
 
     def action_sign_out(self):
+        timeout = fields.Datetime.now()
         for record in self:
             if record.visitor_type == 'individual':
                 record.status = 'signed_out'
                 record.time_out = fields.Datetime.now()
+
+
+
             elif record.visitor_type == 'group':
+                visitors = self.env['visitation.visitors'].search([('visitation_id', '=', record.id)])
+
+                for item in visitors:
+                    if not item.time_out:
+                        check+=1
+                        item.time_out = timeout
+                        item.status = 'signed_out'
+
                 last_visitor = self.env['visitation.visitors'].search(
                     [('visitation_id', '=', record.id)], order='time_out DESC', limit=1
                 )
-
                 if last_visitor:
                     record.time_out = last_visitor.time_out
 
+                record.status='signed_out'
+
+
+
+
+
     def set_nextcall(self):
         cron = self.env['ir.cron'].search([('cron_name', '=', 'Visitation: Auto SignOut')], limit=1)
+
 
     def auto_sign_out(self):
         today = fields.Date.today()  # Get today's date
@@ -88,24 +106,7 @@ class Visitation(models.Model):
                     "\n \n ******************************* There is a record who hasn't signed out yet ********************* \n \n")
                 record.status = 'signed_out'
                 record.auto_signed_out = True
-
-        # Find the cron job
-        cron = self.env['ir.cron'].search([('cron_name', '=', 'Visitation: Auto SignOut')], limit=1)
-        if cron:
-            # Calculate the next run time
-            next_run = fields.Datetime.now().replace(hour=13, minute=50, second=0, microsecond=0)
-            print("Next run time:", next_run)
-
-            # Update the cron job
-            # cron.sudo().write({'nextcall': next_run})
-            print('Auto Sign Out Completed::::::::::::', cron.nextcall)
-        else:
-            print("Cron job not found!")
-
-        print("Auto Sign Out Completed")
-
-            # cron.sudo().write({'nextcall': (fields.Datetime.now() + relativedelta(days=1)).replace(hour=17, minute=0, second=0)})
-            # cron.sudo().write({'nextcall': next_run})fields.Datetime.now() + relativedelta(hour=16, minute=35, second=0)
+                record.time_out = fields.Datetime.now().replace(hour=17, minute=00, second=0, microsecond=0)
 
 
 
@@ -131,6 +132,9 @@ class Visitors(models.Model):
 
     # Link to the Visitation model
     visitation_id = fields.Many2one('visitation.visitation', string='Visitation', ondelete='cascade')
+    check = fields.Boolean(default=False)
+
+
     def action_sign_in(self):
         for record in self:
             record.status = 'signed_in'
@@ -143,14 +147,17 @@ class Visitors(models.Model):
         return record
 
 
+
     def action_sign_out(self):
         for record in self:
-            record.status = 'signed_out'
-            record.time_out = fields.Datetime.now()
+            if not record.time_out:
+                record.status = 'signed_out'
+                record.time_out = fields.Datetime.now()
 
-
-
-
+            records = self.search([('status', '=', 'signed_in')])
+            if not records and record.visitation_id:
+                record.visitation_id.status = 'signed_out'
+                record.visitation_id.time_out = fields.Datetime.now()
 
     def group_auto_sign_out(self):
 
@@ -168,8 +175,23 @@ class Visitors(models.Model):
             # Calculate the next run time
             next_run = fields.Datetime.now().replace(hour=13, minute=50, second=0, microsecond=0)
             print("Next run time:", next_run)
-            print('Auto Sign Out Completed::::::::::::', cron.nextcall)
+            print('Auto Sign Out Completed:', cron.nextcall)
         else:
             print("Cron job not found!")
 
         print("Auto Sign Out Completed")
+
+        # Find the cron job
+        # cron = self.env['ir.cron'].search([('cron_name', '=', 'Visitation: Auto SignOut')], limit=1)
+        # if cron:
+        #     # Calculate the next run time
+        #     next_run = fields.Datetime.now().replace(hour=13, minute=50, second=0, microsecond=0)
+        #     print("Next run time:", next_run)
+        #
+        #     # Update the cron job
+        #     # cron.sudo().write({'nextcall': next_run})
+        #     print('Auto Sign Out Completed::::::::::::', cron.nextcall)
+        # else:
+        #     print("Cron job not found!")
+        #
+        # print("Auto Sign Out Completed")
