@@ -1,5 +1,60 @@
 <odoo>
     <data>
+        <record id="visitation_search" model="ir.ui.view">
+            <field name="name">visitation.search</field>
+            <field name="model">visitation.visitation</field>
+            <field name="arch" type="xml">
+                <search string="Visitation">
+                    <field name="name"/>
+                    <field name="purpose"/>
+                    <field name="time_in"/>
+                    <field name="time_out"/>
+                    <field name="status"/>
+                    <field name="auto_signed_out"/>
+
+<!--                    Filters-->
+                    <filter name="signed_in" string="Signed In" domain="[('status', '=', 'signed_in')]"/>
+                    <filter name="signed_out" string="Signed Out" domain="[('status', '=', 'signed_out')]"/>
+                    <filter name="auto_signed_out" string="Auto Signed Out" domain="[('auto_signed_out', '=', True)]"/>
+                    <filter name="todays_visits" string="Today"  domain="[
+                        ('time_in', '&lt;', (context_today() + relativedelta(days=1)).strftime('%Y-%m-%d 00:00:00')),
+                        ('time_in', '&gt;', context_today().strftime('%Y-%m-%d 00:00:00')),
+                    ]"/>
+                    <filter name="yesterday" string="Yesterday" domain="[
+                        ('time_in', '&lt;', context_today().strftime('%Y-%m-%d 00:00:00')),
+                        ('time_in', '&gt;', (context_today() + relativedelta(days=-1)).strftime('%Y-%m-%d 00:00:00')),
+                    ]"/>
+                    <filter name="last_week" string="Last Week" domain="[
+                        ('time_in', '&lt;', (context_today() + relativedelta(weeks=-1, weekday=6)).strftime('%Y-%m-%d 00:00:00')),
+                        ('time_in', '&gt;', (context_today() + relativedelta(weeks=-2, weekday=6)).strftime('%Y-%m-%d 00:00:00')),
+                    ]"/>
+
+                    <filter name="this_month" string="This Month" domain="[
+                        ('time_in', '&lt;', (context_today() + relativedelta(weeks=-1, weekday=6)).strftime('%Y-%m-%d 00:00:00')),
+                        ('time_in', '&gt;', (context_today() + relativedelta(weeks=-2, weekday=6)).strftime('%Y-%m-%d 00:00:00')),
+                    ]"/>
+
+
+                </search>
+            </field>
+        </record>
+
+        <record id="visitation_calendar" model="ir.ui.view">
+            <field name="name">visitation.calendar</field>
+            <field name="model">visitation.visitation</field>
+            <field name="arch" type="xml">
+                <calendar string="Visitation" date_start="time_in" date_stop="time_out">
+                    <field name="name"/>
+                    <field name="purpose"/>
+                    <field name="time_in"/>
+                    <field name="time_out"/>
+                    <field name="status"/>
+                    <field name="auto_signed_out"/>
+                    <field name="visitor_type"/>
+                </calendar>
+            </field>
+        </record>
+
         <record id="visitor_group_visitors_form" model="ir.ui.view">
             <field name="name">visitor.group.visitors.form</field>
             <field name="model">visitation.visitors</field>
@@ -7,10 +62,11 @@
                 <form string="Add Group Visitor">
                     <sheet>
                         <group>
-                            <field name="role" placeholder="Role"/>
-                            <field name="full_name"/>
-                            <field name="contact" placeholder="+233 123 456 789"/>
-                            <field name="email" placeholder="test123@gmail.com"/>
+                            <field name="role" placeholder="Role" readonly="status == 'signed_out'"/>
+                            <field name="full_name" readonly="status == 'signed_out'"/>
+                            <field name="status" invisible="1"/>
+                            <field name="contact" placeholder="+233 123 456 789" readonly="status == 'signed_out'"/>
+                            <field name="email" placeholder="test123@gmail.com" readonly="status == 'signed_out'"/>
                         </group>
                     </sheet>
                 </form>
@@ -27,7 +83,7 @@
                     <field name="purpose"/>
                     <field name="time_in"/>
                     <field name="time_out"/>
-                    <field name="status"/>
+                    <field name="status" decoration-info="status == 'signed_in'" decoration-danger="auto_signed_out and status == 'signed_out'" decoration-success="status == 'signed_out' and not auto_signed_out"/>
                     <field name="auto_signed_out"/>
                 </tree>
             </field>
@@ -46,8 +102,8 @@
                         <group>
                             <field name="purpose" readonly="id"/>
                             <field name="visitor_type" readonly="id"/>
-                            <field name="time_in" string="Time In" invisible="not time_in"/>
-                            <field name="time_out" string="Time Out" invisible="not time_out"/>
+                            <field name="time_in" string="Check In" invisible="not time_in"/>
+                            <field name="time_out" string="Check Out" invisible="not time_out"/>
                         </group>
 
                         <notebook>
@@ -66,14 +122,14 @@
                                     <field name="company_name" readonly="id"/>
                                 </group>
                                 <field name="group_visitors">
-                                    <tree editable="false" readonly="id">
-                                        <field name="role" readonly="id"/>
-                                        <field name="full_name" readonly="id"/>
+                                    <tree>
+                                        <field name="role" readonly="parent.status == 'signed_out'"/>
+                                        <field name="full_name" readonly="status"/>
                                         <field name="email"/>
                                         <field name="contact" readonly="id"/>
-                                        <field name="time_in" string="Time In" invisible="not time_in"/>
-                                        <field name="time_out" string="Time Out" invisible="not time_out"/>
-                                        <field name="status"/>
+                                        <field name="time_in" string="Check In" invisible="not time_in"/>
+                                        <field name="time_out" string="Check Out" invisible="not time_out"/>
+                                        <field name="status" decoration-info="status == 'signed_in'" decoration-danger="auto_signed_out and status == 'signed_out'" decoration-success="status == 'signed_out' and not auto_signed_out"/>
                                         <field name="auto_signed_out" invisible="not auto_signed_out" help="If checked, this visitor was signed out automatically when the work period was over"/>
                                         <button name="action_sign_out" type="object" string="Sign Out" class="btn-danger" invisible = "status != 'signed_in'"/>
                                     </tree>
@@ -82,7 +138,7 @@
                         </notebook>
 
 
-                        <button name="action_sign_out" type="object" string="Sign Out" class="btn-danger" invisible = "status != 'signed_in' "/>
+                        <button name="action_sign_out" type="object" string="Sign Out" class="btn-danger" invisible = "status != 'signed_in'"/>
 
                     </sheet>
                 </form>
@@ -93,7 +149,8 @@
         <record id="action_visitor_management" model="ir.actions.act_window">
             <field name="name">Visitation</field>
             <field name="res_model">visitation.visitation</field>
-            <field name="view_mode">tree,form</field>
+            <field name="view_mode">search,tree,form,calendar</field>
+            <field name="context">{'search_default_todays_visits': 1}</field>
         </record>
 
         
