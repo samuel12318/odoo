@@ -9,13 +9,13 @@ class Visitation(models.Model):
     _description = 'Visitation'
 
     name = fields.Char(string='Name', compute="_compute_name", store=True)
-    title = fields.Selection(selection='title_selection', string='Title')
+    title = fields.Char(string='Role')
 
     visitor_type = fields.Selection([('individual', 'Individual'), ('group', 'Group')], string='Visitor Type', required=True)
     purpose = fields.Char(string='Purpose', required=True)
 
-    full_name = fields.Char(string='Full Name' ,required=True)
-    contact = fields.Char(string='Contact', required=True)
+    full_name = fields.Char(string='Full Name')
+    contact = fields.Char(string='Contact')
     email = fields.Char(string='Email')
 
 
@@ -32,8 +32,6 @@ class Visitation(models.Model):
     auto_signed_out = fields.Boolean(default=False)
     check = fields.Integer(default=0,compute="_compute_check")
 
-    def title_selection(self):
-        return [('Mr.', 'Mr.'), ('Mrs.', 'Mrs.'), ('Dr.', 'Dr.'), ('Miss', 'Miss')]
 
     def send_mail(self):
         try:
@@ -64,7 +62,7 @@ class Visitation(models.Model):
             print(e)
         return True
 
-    
+
     @api.depends('visitor_type', 'title', 'full_name', 'company_name')
     def _compute_name(self):
         for record in self:
@@ -182,7 +180,7 @@ class Visitors(models.Model):
         try:
 
             mail_values = {
-                "subject": f"Visitation Letter: {self.role}. {self.full_name}",
+                "subject": f"Visitation Letter: {self.full_name} :{self.role}. ",
                 "body_html": f"""
                     <p>Dear {self.full_name},</p>
 
@@ -233,6 +231,7 @@ class Visitors(models.Model):
                 record.visitation_id.status = 'signed_out'
                 record.visitation_id.time_out = fields.Datetime.now()
 
+
     def group_auto_sign_out(self):
 
         records = self.search([])
@@ -250,4 +249,6 @@ class Visitors(models.Model):
 
 
 
-
+    #title=fields.Selection(selection='title_selection')
+    # def title_selection(self):
+    #     return [('Mr.', 'Mr.'), ('Mrs.', 'Mrs.'), ('Dr.', 'Dr.'), ('Miss', 'Miss')]

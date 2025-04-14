@@ -43,7 +43,7 @@
             <field name="name">visitation.calendar</field>
             <field name="model">visitation.visitation</field>
             <field name="arch" type="xml">
-                <calendar string="Visitation" date_start="time_in" date_stop="time_out">
+                <calendar string="Visitation" date_start="time_in" date_stop="time_out" mode="month">
                     <field name="name"/>
                     <field name="purpose"/>
                     <field name="time_in"/>
@@ -55,36 +55,18 @@
             </field>
         </record>
 
-        <record id="visitor_group_visitors_form" model="ir.ui.view">
-            <field name="name">visitor.group.visitors.form</field>
-            <field name="model">visitation.visitors</field>
-            <field name="arch" type="xml">
-                <form string="Add Group Visitor">
-                    <sheet>
-                        <group>
-                            <field name="role" placeholder="Role" readonly="status == 'signed_out'"/>
-                            <field name="full_name" readonly="status == 'signed_out'"/>
-                            <field name="status" invisible="1"/>
-                            <field name="contact" placeholder="+233 123 456 789" readonly="status == 'signed_out'"/>
-                            <field name="email" placeholder="test123@gmail.com" readonly="status == 'signed_out'"/>
-                        </group>
-                    </sheet>
-                </form>
-            </field>
-        </record>
-
 
         <record id="visitor_visitation_tree" model="ir.ui.view">
             <field name="name">visitor.visitation.tree</field>
             <field name="model">visitation.visitation</field>
             <field name="arch" type="xml">
-                <tree string="Visitation">
+                <tree string="Visitation" default_order="id desc">
                     <field name="name"/>
                     <field name="purpose"/>
                     <field name="time_in"/>
                     <field name="time_out"/>
-                    <field name="status" decoration-info="status == 'signed_in'" decoration-danger="auto_signed_out and status == 'signed_out'" decoration-success="status == 'signed_out' and not auto_signed_out"/>
-                    <field name="auto_signed_out"/>
+                    <field name="status" decoration-info="status == 'signed_in'" decoration-danger="auto_signed_out and status == 'signed_out'" decoration-bf="status == 'signed_out' and not auto_signed_out"/>
+                    <field name="auto_signed_out" invisible="not auto_signed_out" widget="button"/>
                 </tree>
             </field>
         </record>
@@ -100,8 +82,8 @@
                             <field name="status" widget="statusbar"/>
                         </header>
                         <group>
-                            <field name="purpose" readonly="id"/>
                             <field name="visitor_type" readonly="id"/>
+                            <field name="purpose" readonly="id"/>
                             <field name="time_in" string="Check In" invisible="not time_in"/>
                             <field name="time_out" string="Check Out" invisible="not time_out"/>
                         </group>
@@ -109,7 +91,7 @@
                         <notebook>
                             <page string="Visitor" invisible = "visitor_type != 'individual'">
                                 <group>
-                                    <field name="title" string="Title" readonly="id"/>
+                                    <field name="title" string="Role" readonly="id"/>
                                     <field name="full_name" readonly="id"/>
                                     <field name="contact" readonly="id" placeholder="+233 123 456 789"/>
                                     <field name="email" readonly="id" placeholder="test123@gmail.com"/>
@@ -122,14 +104,14 @@
                                     <field name="company_name" readonly="id"/>
                                 </group>
                                 <field name="group_visitors">
-                                    <tree>
+                                    <tree editable="bottom">
                                         <field name="role" readonly="parent.status == 'signed_out'"/>
-                                        <field name="full_name" readonly="status"/>
-                                        <field name="email"/>
-                                        <field name="contact" readonly="id"/>
+                                        <field name="full_name" readonly="parent.status == 'signed_out'"/>
+                                        <field name="email" readonly="parent.status == 'signed_out'"/>
+                                        <field name="contact" readonly="parent.status == 'signed_out'"/>
                                         <field name="time_in" string="Check In" invisible="not time_in"/>
                                         <field name="time_out" string="Check Out" invisible="not time_out"/>
-                                        <field name="status" decoration-info="status == 'signed_in'" decoration-danger="auto_signed_out and status == 'signed_out'" decoration-success="status == 'signed_out' and not auto_signed_out"/>
+                                        <field name="status"  decoration-info="status == 'signed_in' " decoration-danger="auto_signed_out and status == 'signed_out'" decoration-bf="status == 'signed_out' and not auto_signed_out " readonly='1'/>
                                         <field name="auto_signed_out" invisible="not auto_signed_out" help="If checked, this visitor was signed out automatically when the work period was over"/>
                                         <button name="action_sign_out" type="object" string="Sign Out" class="btn-danger" invisible = "status != 'signed_in'"/>
                                     </tree>
