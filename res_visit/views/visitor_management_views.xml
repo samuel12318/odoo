@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="visitor_visitation_form" model="ir.ui.view">
+        <field name="name">res.visit.inherit.notebook</field>
+        <field name="model">visitation.visitation</field>
+        <field name="inherit_id" ref="visitation_management.visitor_visitation_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string = "Remarks" invisible="not time_out">
+                    <group>
+                        <field name="remarks" string="Remarks" style="border:1pt inset grey; border-radius: 15px;"/>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>
