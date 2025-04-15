@@ -166,7 +166,7 @@
         </field>
     </record>
 
-    <menuitem id="menu_main" name="Bonney's HomePage" sequence="-1">
+    <menuitem id="menu_main" name="Estate Management" sequence="-1" web_icon="real_estate,static/description/icon.png">
 
         <menuitem id="menu_estate_client" name="Estate Client" action="estate_client_form" sequence="1"/>
         <menuitem id="menu_estate_property_list" name="Estate Property" action="action_estate_property_form" sequence="3"/>

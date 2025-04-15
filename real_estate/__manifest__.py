@@ -1,5 +1,5 @@
 {
- "name":"My Estate Management",
+ "name":"Estate Management",
  "summary":"Module for managing real estate properties",
  "description": "This module helps in managing real estate properties, including listing, selling, and renting properties.",
  "category":"Tools",
